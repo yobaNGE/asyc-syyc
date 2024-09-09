@@ -8,14 +8,14 @@ public class MatrixMultiplication {
     static int[][] matA = new int[MAX_N][MAX_N];
     static int[][] matB = new int[MAX_N][MAX_N];
     static int[][] matResult = new int[MAX_N][MAX_N];
-    static int step_i = 0;
+    static int offset_i = 0;
 
 
 
-    static class Worker implements Runnable {
+    static class Threader implements Runnable {
         int i;
 
-        Worker(int i) {
+        Threader(int i) {
             this.i = i;
         }
 
@@ -51,7 +51,7 @@ public class MatrixMultiplication {
         Thread[] threads = new Thread[MAX_THREAD];
         long current = System.currentTimeMillis();
         for (int i = 0; i < MAX_THREAD; i++) {
-            threads[i] = new Thread(new Worker(step_i++));
+            threads[i] = new Thread(new Threader(offset_i++));
             threads[i].start();
         }
 
