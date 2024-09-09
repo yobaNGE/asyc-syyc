@@ -1,18 +1,15 @@
 package org.chiches.asycsyyc;
 
 import java.io.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class MatrixMultiplication {
-    //static final int N = 997;
-    static final int MAX = 1553;
+    static final int MAX_N = 1553;
     static final int MAX_THREAD = 12;
-    static int[][] matA = new int[MAX][MAX];
-    static int[][] matB = new int[MAX][MAX];
-    static int[][] matC = new int[MAX][MAX];
+    static int[][] matA = new int[MAX_N][MAX_N];
+    static int[][] matB = new int[MAX_N][MAX_N];
+    static int[][] matResult = new int[MAX_N][MAX_N];
     static int step_i = 0;
+
 
 
     static class Worker implements Runnable {
@@ -24,10 +21,10 @@ public class MatrixMultiplication {
 
         @Override
         public void run() {
-            for (int i = this.i; i < MAX; i += MAX_THREAD) {
-                for (int j = 0; j < MAX; j++) {
-                    for (int k = 0; k < MAX; k++) {
-                        matC[i][j] += matA[i][k] * matB[k][j];
+            for (int i = this.i; i < MAX_N; i += MAX_THREAD) {
+                for (int j = 0; j < MAX_N; j++) {
+                    for (int k = 0; k < MAX_N; k++) {
+                        matResult[i][j] += matA[i][k] * matB[k][j];
                     }
                 }
             }
@@ -37,10 +34,9 @@ public class MatrixMultiplication {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
-        //int N = 641;
         String fileNameA = "matrixA.ser", fileNameB = "matrixB.ser";
-        int[][] matrixA = generateMatrix(MAX);
-        int[][] matrixB = generateMatrix(MAX);
+        int[][] matrixA = generateMatrix(MAX_N);
+        int[][] matrixB = generateMatrix(MAX_N);
         try {
             serializeMatrix(matrixA, fileNameA);
             serializeMatrix(matrixB, fileNameB);
@@ -70,17 +66,14 @@ public class MatrixMultiplication {
         System.out.println("Time multi thread: " + time + " ms");
 
         long timeSingle = System.currentTimeMillis();
-        int[][] result = multiplyMatrices(matA, matB, MAX);
+        int[][] result = multiplyMatrices(matA, matB, MAX_N);
         long timeSingleEnd = System.currentTimeMillis() - timeSingle;
         System.out.println("Time single thread: " + timeSingleEnd + " ms");
 
     }
 
-    // Метод для умножения матриц
     public static int[][] multiplyMatrices(int[][] matrixA, int[][] matrixB, int N) {
         int[][] result = new int[N][N];
-
-        // Основной алгоритм умножения
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 for (int k = 0; k < N; k++) {
@@ -90,33 +83,6 @@ public class MatrixMultiplication {
         }
         return result;
     }
-
-    public static int[][] multiplyMatricesThread(int[][] matrixA, int[][] matrixB, int N) {
-        int[][] result = new int[N][N];
-
-        // Основной алгоритм умножения
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                MyThread myThread = new MyThread();
-                //System.out.println(result[i][j]);
-                myThread.run(result, matrixA, matrixB, i, j, N);
-                //System.out.println(result[i][j]);
-
-
-//                final int row = i;
-//                final int col = j;
-//                Thread virtualThread = Thread.startVirtualThread(() -> {
-//                    //System.out.println("Running task in a virtual thread: " + Thread.currentThread().getName());
-//                    for (int k = 0; k < N; k++) {
-//                        result[row][col] += matrixA[row][k] * matrixB[k][col];
-//                    }
-//                });
-            }
-        }
-        return result;
-    }
-
-    // Метод для вывода матрицы
     public static void printMatrix(int[][] matrix) {
         for (int[] row : matrix) {
             for (int elem : row) {
@@ -127,25 +93,22 @@ public class MatrixMultiplication {
         System.out.println();
     }
 
-    // Метод для генерации матрицы NxN
     public static int[][] generateMatrix(int N) {
         int[][] matrix = new int[N][N];
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                matrix[i][j] = (int) (Math.random() * 100); // Заполнение случайными числами от 0 до 99
+                matrix[i][j] = (int) (Math.random() * 100);
             }
         }
         return matrix;
     }
 
-    // Метод для сериализации матрицы в файл
     public static void serializeMatrix(int[][] matrix, String fileName) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
             oos.writeObject(matrix);
         }
     }
 
-    // Метод для десериализации матрицы из файла
     public static int[][] deserializeMatrix(String fileName) throws IOException, ClassNotFoundException {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
             return (int[][]) ois.readObject();
