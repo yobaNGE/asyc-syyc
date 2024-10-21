@@ -52,7 +52,6 @@ class MatrixMultiplicationKernely extends Kernel {
 
         // Define the execution range (N * N work-items, one for each matrix element)
         Range range = Range.create(N * N);
-
         // Execute the kernel
         kernel.execute(range);
 
