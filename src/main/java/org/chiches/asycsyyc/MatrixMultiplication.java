@@ -114,5 +114,25 @@ public class MatrixMultiplication {
             return (int[][]) ois.readObject();
         }
     }
+    public static long[][] generateMatrixLong(int N) {
+        long[][] matrix = new long[N][N];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                matrix[i][j] = (long) (Math.random() * 100);
+            }
+        }
+        return matrix;
+    }
 
+    public static void serializeMatrixLong(long[][] matrix, String fileName) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            oos.writeObject(matrix);
+        }
+    }
+
+    public static long[][] deserializeMatrixLong(String fileName) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            return (long[][]) ois.readObject();
+        }
+    }
 }

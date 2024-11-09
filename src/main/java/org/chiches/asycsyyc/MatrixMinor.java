@@ -1,32 +1,48 @@
 package org.chiches.asycsyyc;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.chiches.asycsyyc.MatrixMultiplication.generateMatrix;
+import static org.chiches.asycsyyc.MatrixMultiplication.generateMatrixLong;
 
 public class MatrixMinor {
-    static final int MAX = 10;
+    static final int MAX = 5;
     static final int MAX_THREAD = 12;
-    static int[][] matA = new int[MAX][MAX];
+    static long[][] matA = new long[MAX][MAX];
     static int step_i = 0;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        String fileNameA = "matrix.ser";
-        int[][] matrixA = generateMatrix(MAX);
+
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+        String fileNameA = "matrixmin.ser";
+        long[][] matrixA = generateMatrixLong(MAX);
         try {
-            MatrixMultiplication.serializeMatrix(matrixA, fileNameA);
+            MatrixMultiplication.serializeMatrixLong(matrixA, fileNameA);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        matA = MatrixMultiplication.deserializeMatrix(fileNameA);
-        MatrixMultiplication.printMatrix(matA);
+        matA = MatrixMultiplication.deserializeMatrixLong(fileNameA);
+        //MatrixMultiplication.printMatrix(matA);
         long timeStartSingle = System.currentTimeMillis();
         System.out.println(determinant(matA));
         long timeEndSingle = System.currentTimeMillis();
         System.out.println("Single thread time: " + (timeEndSingle - timeStartSingle) + "ms");
+
+
+        matA = MatrixMultiplication.deserializeMatrixLong(fileNameA);
+        //MatrixMultiplication.printMatrix(matA);
+       // long multiThreadStart = System.currentTimeMillis();
+        DeterminantCalculatorConfigurable calculatorConfigurable = new DeterminantCalculatorConfigurable(MAX, MAX_THREAD, matA);
+        calculatorConfigurable.calculateDeterminant();
+        //System.out.println("Multi-thread time: " + (System.currentTimeMillis() - multiThreadStart) + "ms");
     }
-    public static long getMinor(int[][] matrix, int row, int col) {
-        int[][] minor = new int[matrix.length - 1][matrix.length - 1];
+
+    public static long getMinor(long[][] matrix, int row, int col) {
+        long[][] minor = new long[matrix.length - 1][matrix.length - 1];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
                 if (i != row && j != col) {
@@ -36,12 +52,13 @@ public class MatrixMinor {
         }
         return determinant(minor);
     }
-    public static long determinant(int[][] minor) {
+
+    public static long determinant(long[][] minor) {
         if (minor.length == 1) {
             return minor[0][0];
         }
         if (minor.length == 2) {
-            return minor[0][0] * minor[1][1] - minor[0][1] * minor[1][0];
+            return (long) minor[0][0] * (long) minor[1][1] - (long) minor[0][1] * (long) minor[1][0];
         }
         long det = 0;
         for (int i = 0; i < minor.length; i++) {
@@ -50,4 +67,7 @@ public class MatrixMinor {
         return det;
     }
 
+    public static void begin() {
+
+    }
 }
