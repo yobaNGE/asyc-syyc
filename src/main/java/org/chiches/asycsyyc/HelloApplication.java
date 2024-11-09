@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 public class HelloApplication extends Application {
     @Override
@@ -18,6 +19,7 @@ public class HelloApplication extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        //launch();
+        //System.out.println(BigInteger.TEN.pow(1000000));
     }
 }

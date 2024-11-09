@@ -1,73 +1,77 @@
 package org.chiches.asycsyyc;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import static org.chiches.asycsyyc.MatrixMultiplication.generateMatrix;
 import static org.chiches.asycsyyc.MatrixMultiplication.generateMatrixLong;
 
 public class MatrixMinor {
-    static final int MAX = 5;
+    static final int MAX = 10;
     static final int MAX_THREAD = 12;
     static long[][] matA = new long[MAX][MAX];
     static int step_i = 0;
 
 
-
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         String fileNameA = "matrixmin.ser";
-        long[][] matrixA = generateMatrixLong(MAX);
-        try {
-            MatrixMultiplication.serializeMatrixLong(matrixA, fileNameA);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (true) {
+            long[][] matrixA = generateMatrixLong(MAX, 100);
+            try {
+                MatrixMultiplication.serializeMatrixLong(matrixA, fileNameA);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         matA = MatrixMultiplication.deserializeMatrixLong(fileNameA);
-        //MatrixMultiplication.printMatrix(matA);
+        MatrixMultiplication.printMatrix(matA);
         long timeStartSingle = System.currentTimeMillis();
-        System.out.println(determinant(matA));
+        System.out.println(calculateDeterminant(matA));
         long timeEndSingle = System.currentTimeMillis();
         System.out.println("Single thread time: " + (timeEndSingle - timeStartSingle) + "ms");
 
 
         matA = MatrixMultiplication.deserializeMatrixLong(fileNameA);
-        //MatrixMultiplication.printMatrix(matA);
-       // long multiThreadStart = System.currentTimeMillis();
-        DeterminantCalculatorConfigurable calculatorConfigurable = new DeterminantCalculatorConfigurable(MAX, MAX_THREAD, matA);
+        DeterminantCalculatorLong calculatorConfigurable = new DeterminantCalculatorLong(MAX, MAX_THREAD, matA);
         calculatorConfigurable.calculateDeterminant();
-        //System.out.println("Multi-thread time: " + (System.currentTimeMillis() - multiThreadStart) + "ms");
+
     }
 
-    public static long getMinor(long[][] matrix, int row, int col) {
-        long[][] minor = new long[matrix.length - 1][matrix.length - 1];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix.length; j++) {
-                if (i != row && j != col) {
-                    minor[i < row ? i : i - 1][j < col ? j : j - 1] = matrix[i][j];
+    public static long calculateDeterminant(long[][] matrix) {
+        int size = matrix.length;
+        if (size == 1) {
+            return matrix[0][0];
+        } else if (size == 2) {
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        } else {
+            long determinant = 0;
+            for (int col = 0; col < size; col++) {
+                long[][] minor = getMinor(matrix, 0, col);
+                long minorDeterminant = calculateDeterminant(minor);
+                long cofactor = ((col % 2 == 0) ? 1 : -1) * matrix[0][col] * minorDeterminant;
+                determinant += cofactor;
+            }
+            return determinant;
+        }
+    }
+
+    private static long[][] getMinor(long[][] matrix, int excludeRow, int excludeCol) {
+        int size = matrix.length;
+        long[][] minor = new long[size - 1][size - 1];
+        int rowOffset = 0;
+
+        for (int i = 0; i < size; i++) {
+            if (i == excludeRow) {
+                rowOffset = -1;
+                continue;
+            }
+            int colOffset = 0;
+            for (int j = 0; j < size; j++) {
+                if (j == excludeCol) {
+                    colOffset = -1;
+                    continue;
                 }
+                minor[i + rowOffset][j + colOffset] = matrix[i][j];
             }
         }
-        return determinant(minor);
-    }
-
-    public static long determinant(long[][] minor) {
-        if (minor.length == 1) {
-            return minor[0][0];
-        }
-        if (minor.length == 2) {
-            return (long) minor[0][0] * (long) minor[1][1] - (long) minor[0][1] * (long) minor[1][0];
-        }
-        long det = 0;
-        for (int i = 0; i < minor.length; i++) {
-            det += (i % 2 == 0 ? 1 : -1) * minor[0][i] * getMinor(minor, 0, i);
-        }
-        return det;
-    }
-
-    public static void begin() {
-
+        return minor;
     }
 }
