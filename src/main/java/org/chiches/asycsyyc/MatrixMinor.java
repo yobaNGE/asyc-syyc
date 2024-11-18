@@ -5,7 +5,7 @@ import java.io.IOException;
 import static org.chiches.asycsyyc.MatrixMultiplication.generateMatrixLong;
 
 public class MatrixMinor {
-    static final int MAX = 10;
+    static final int MAX = 11;
     static final int MAX_THREAD = 12;
     static long[][] matA = new long[MAX][MAX];
     static int step_i = 0;
@@ -13,7 +13,8 @@ public class MatrixMinor {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         String fileNameA = "matrixmin.ser";
-        if (true) {
+        boolean generateMatrix = true;
+        if (generateMatrix) {
             long[][] matrixA = generateMatrixLong(MAX, 100);
             try {
                 MatrixMultiplication.serializeMatrixLong(matrixA, fileNameA);
@@ -24,15 +25,17 @@ public class MatrixMinor {
         matA = MatrixMultiplication.deserializeMatrixLong(fileNameA);
         MatrixMultiplication.printMatrix(matA);
         long timeStartSingle = System.currentTimeMillis();
-        System.out.println(calculateDeterminant(matA));
+        System.out.println(STR."Determinant: \{calculateDeterminant(matA)}");
         long timeEndSingle = System.currentTimeMillis();
-        System.out.println("Single thread time: " + (timeEndSingle - timeStartSingle) + "ms");
-
+        System.out.println(STR."Single thread time: \{timeEndSingle - timeStartSingle}ms");
 
         matA = MatrixMultiplication.deserializeMatrixLong(fileNameA);
-        DeterminantCalculatorLong calculatorConfigurable = new DeterminantCalculatorLong(MAX, MAX_THREAD, matA);
-        calculatorConfigurable.calculateDeterminant();
 
+        long startTime = System.currentTimeMillis();
+        long determinant = MatrixDeterminant.calculateDeterminant(matA);
+        long endTime = System.currentTimeMillis();
+        System.out.println(STR."Determinant: \{determinant}");
+        System.out.println(STR."Execution Time: \{(endTime - startTime)} ms");
     }
 
     public static long calculateDeterminant(long[][] matrix) {
