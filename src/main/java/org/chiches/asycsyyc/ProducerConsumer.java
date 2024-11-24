@@ -12,9 +12,9 @@ import java.util.List;
 public class ProducerConsumer {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Store store = new Store(5);
+            Store store = new Store(15);
             ProducerConsumerUI ui = new ProducerConsumerUI(store);
-            ui.createAndShowGUI(6, 3); // Specify number of producers and consumers
+            ui.createAndShowGUI(25, 25); // Specify number of producers and consumers
         });
     }
 }
@@ -191,13 +191,14 @@ class Store {
             notEmpty.signalAll();
         } finally {
             lock.unlock();
+            Thread.sleep(250);
         }
     }
 
     public void consume(ProducerConsumerUI ui) throws InterruptedException {
         lock.lock();
         try {
-            ui.updateConsumerStatus(Thread.currentThread().getName(), "Working");
+            //ui.updateConsumerStatus(Thread.currentThread().getName(), "Working");
             while (queue.isEmpty()) {
                 ui.logStatus(Thread.currentThread().getName() + " waiting: Queue is empty");
                 ui.updateConsumerStatus(Thread.currentThread().getName(), "Waiting (Queue Empty)");
@@ -210,6 +211,7 @@ class Store {
             notFull.signalAll();
         } finally {
             lock.unlock();
+            Thread.sleep(250);
         }
     }
 }
@@ -257,6 +259,7 @@ class Consumer implements Runnable {
         try {
             while (true) {
                 store.consume(ui);
+                ui.updateConsumerStatus(Thread.currentThread().getName(), "Working");
                 Thread.sleep((int) (Math.random() * 1000));
                 ui.updateConsumerStatus(name, "Idle");
             }
