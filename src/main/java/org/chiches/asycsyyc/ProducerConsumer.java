@@ -198,7 +198,6 @@ class Store {
     public void consume(ProducerConsumerUI ui) throws InterruptedException {
         lock.lock();
         try {
-            //ui.updateConsumerStatus(Thread.currentThread().getName(), "Working");
             while (queue.isEmpty()) {
                 ui.logStatus(Thread.currentThread().getName() + " waiting: Queue is empty");
                 ui.updateConsumerStatus(Thread.currentThread().getName(), "Waiting (Queue Empty)");

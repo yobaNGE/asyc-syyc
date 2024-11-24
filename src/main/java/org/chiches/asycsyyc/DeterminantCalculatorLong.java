@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+@Deprecated
 public class DeterminantCalculatorLong {
     static int matrixSize;
     static int threadCount;

@@ -61,11 +61,5 @@ public class MatrixDeterminant {
         }
         return minor;
     }
-
-    public static void main(String[] args) {
-
-        // Print result and execution time
-        System.out.println(Runtime.getRuntime().availableProcessors());
-    }
 }
 
