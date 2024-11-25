@@ -14,7 +14,7 @@ public class ProducerConsumer {
         SwingUtilities.invokeLater(() -> {
             Store store = new Store(15);
             ProducerConsumerUI ui = new ProducerConsumerUI(store);
-            ui.createAndShowGUI(25, 25); // Specify number of producers and consumers
+            ui.createAndShowGUI(25, 25);
         });
     }
 }
@@ -99,7 +99,7 @@ class ProducerConsumerUI {
 
     public void updateQueueStatus(int size) {
         SwingUtilities.invokeLater(() -> {
-            queueStatusLabel.setText("Queue Status: " + size + " items");
+            queueStatusLabel.setText(STR."Queue Status: \{size} items");
             if (size == 0) {
                 queueStatusLabel.setBackground(Color.RED);
             } else if (size == store.getCapacity()) {
